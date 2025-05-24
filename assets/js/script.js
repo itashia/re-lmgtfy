@@ -1,61 +1,112 @@
-wside = (window.sidebar) ? true: false;
-var isOff = false;
-function mt_cm() {
-    return false
-}
-function mt_md(e) {
-    mac = navigator.userAgent.indexOf('Mac') != -1;
-    if (document.all) {
-        if (event.button == 2 || (mac && (event.ctrlKey || event.keyCode == 91))) {
-            return false
-        }
-    } else {
-        if (e.which == 3 || (mac && (e.modifiers == 2 || e.ctrlKey))) {
-            return false
-        }
-    }
-}
-if (navigator.appName.indexOf('Internet Explorer') == -1 || (navigator.userAgent.indexOf('MSIE') != -1 && document.all.length != 0)) {
-    if (document.all) {
-        mac = navigator.userAgent.indexOf('Mac') != -1;
-        version = parseFloat('0' + navigator.userAgent.substr(navigator.userAgent.indexOf('MSIE') + 5), 10);
-        if (!mac && version > 4) {
-            document.oncontextmenu = mt_cm
-        } else {
-            document.onmousedown = mt_md;
-            document.onkeydown = mt_md
-        }
-    } else if (document.layers) {
-        window.captureEvents(Event.MOUSEDOWN | Event.modifiers | Event.KEYDOWN);
-        window.onmousedown = mt_md;
-        window.onkeydown = mt_md
-    } else if (document.getElementById && !document.all) {
-        document.oncontextmenu = mt_cm
-    }
-}
-function disdrag() {
-    if (document.all) {
-        document.ondragstart = new Function("return false");
-        for (i = 0; i < document.images.length; i++) {
-            z = document.images(i);
-            z.galleryImg = 'no';
-        }
-    }
+/**
+ * Enhanced Right-Click & Drag Protection Script
+ * Optimized for performance and modern browsers
+ * @version 2.0
+ */
+
+const isMac = navigator.userAgent.includes('Mac');
+const isIE = !!document.documentMode;
+const isLegacyIE = isIE && parseFloat(navigator.userAgent.match(/MSIE (\d+\.\d+)/i)?.[1] || '0') <= 4;
+const isFileProtocol = window.location.protocol === 'file:';
+
+// Main configuration
+const config = {
+  disableRightClick: true,
+  disableDrag: true,
+  disableStatusBarText: true,
+  preventLocalFileAccess: true
 };
-disdrag();
-function mt_nls() {
-    window.status = '';
-    return true
-}
-function mt_nlsl() {
-    mt_nls();
-    setTimeout('mt_nlsl()', 10)
-}
-if (document.layers) document.captureEvents(Event.MOUSEOVER | Event.MOUSEOUT);
-document.onmouseover = mt_nls;
-document.onmouseout = mt_nls;
-mt_nlsl();
-if (document.URL.substring(0, 4) == 'file') {
-    window.location = 'about:blank';
-    isOff = true
+
+// Core functions
+const disableContextMenu = (e) => {
+  e.preventDefault();
+  return false;
+};
+
+const checkMouseDown = (e) => {
+  const rightClick = e.button === 2 || (isMac && (e.ctrlKey || e.keyCode === 91));
+  if (rightClick) {
+    e.preventDefault();
+    return false;
+  }
+  return true;
+};
+
+const disableDragStart = () => {
+  document.addEventListener('dragstart', (e) => {
+    if (e.target.tagName === 'IMG') {
+      e.preventDefault();
+      return false;
+    }
+  });
+  
+  // Modern approach for image drag prevention
+  document.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+  });
+};
+
+const clearStatusBar = () => {
+  window.status = '';
+};
+
+const preventLocalFileAccess = () => {
+  if (isFileProtocol && config.preventLocalFileAccess) {
+    window.location.replace('about:blank');
+  }
+};
+
+// Event listener setup
+const setupEventListeners = () => {
+  if (!config.disableRightClick) return;
+
+  // Modern browsers
+  if (document.addEventListener) {
+    document.addEventListener('contextmenu', disableContextMenu);
+    
+    if (isLegacyIE || !isIE) {
+      document.addEventListener('mousedown', checkMouseDown);
+      if (isMac) {
+        document.addEventListener('keydown', checkMouseDown);
+      }
+    }
+  } 
+  // Legacy IE
+  else if (document.attachEvent) {
+    document.attachEvent('oncontextmenu', disableContextMenu);
+    document.attachEvent('onmousedown', checkMouseDown);
+    if (isMac) {
+      document.attachEvent('onkeydown', checkMouseDown);
+    }
+  }
+
+  // Status bar text prevention
+  if (config.disableStatusBarText) {
+    const clearStatus = () => {
+      window.status = '';
+      setTimeout(clearStatus, 100);
+    };
+    
+    document.addEventListener('mouseover', clearStatusBar);
+    document.addEventListener('mouseout', clearStatusBar);
+    clearStatus();
+  }
+
+  // Drag prevention
+  if (config.disableDrag) {
+    disableDragStart();
+  }
+};
+
+// Initialize
+const initProtection = () => {
+  preventLocalFileAccess();
+  setupEventListeners();
+};
+
+// Modern DOM ready check
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initProtection();
+} else {
+  document.addEventListener('DOMContentLoaded', initProtection);
 }
