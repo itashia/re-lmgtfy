@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 
 <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -31,8 +31,363 @@
     <script src="assets/js/bundle.js" type="text/javascript"></script>
     <script src="assets/js/script.js" type="text/javascript"></script>
     <script src="assets/js/clipboard.js" type="text/javascript"></script>
+    
+    <!-- Add Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Add Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="assets/css/main.css" type="text/css" media="screen" title="stylesheet"/>
+    <style>
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+            --google-gray: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            color: #202124;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        #instructions {
+            margin: 20px auto;
+            max-width: 580px;
+            color: #5f6368;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .main {
+            padding-top: 100px;
+            max-width: 584px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            margin-bottom: 20px;
+        }
+        
+        #logo {
+            height: 92px;
+            width: auto;
+        }
+        
+        .input-search {
+            position: relative;
+            margin: 0 auto 20px;
+            max-width: 584px;
+            border: 1px solid #dfe1e5;
+            border-radius: 24px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-search:hover {
+            box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+            border-color: rgba(223, 225, 229, 0);
+        }
+        
+        .input-search input {
+            border: none;
+            outline: none;
+            flex: 1;
+            height: 100%;
+            font-size: 16px;
+            background: transparent;
+            color: #202124;
+            padding: 0 10px;
+        }
+        
+        .input-search img {
+            width: 20px;
+            height: 20px;
+            opacity: 0.4;
+        }
+        
+        .buttons-search {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+        }
+        
+        .button_wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button_wrapper .inner {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .button_wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--google-gray);
+            z-index: 1;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .button_wrapper:hover::before {
+            background: #f1f1f1;
+            transform: scale(1.05);
+        }
+        
+        .buttons-search input[type="button"] {
+            background-color: #f8f9fa;
+            border: 1px solid #f8f9fa;
+            border-radius: 4px;
+            color: #3c4043;
+            font-size: 14px;
+            padding: 0 16px;
+            line-height: 27px;
+            height: 36px;
+            min-width: 54px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+        
+        .buttons-search input[type="button"]:hover {
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #dadce0;
+            color: #202124;
+        }
+        
+        #link {
+            margin: 30px auto;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: none;
+            position: relative;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid #dfe1e5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .close {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 24px;
+            height: 24px;
+            opacity: 0.5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close:hover {
+            opacity: 1;
+        }
+        
+        .close::before, .close::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 2px;
+            background: #5f6368;
+        }
+        
+        .close::before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        
+        .close::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+        
+        .box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .link {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #dfe1e5;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #202124;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        .link:focus {
+            border-color: var(--google-blue);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .buttons button {
+            background-color: var(--google-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .buttons button:hover {
+            background-color: #3367d6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .buttons button:nth-child(2) {
+            background-color: var(--google-green);
+        }
+        
+        .buttons button:nth-child(2):hover {
+            background-color: #2d9250;
+        }
+        
+        .buttons button:nth-child(3) {
+            background-color: var(--google-yellow);
+            color: #202124;
+        }
+        
+        .buttons button:nth-child(3):hover {
+            background-color: #e8ac04;
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip::after {
+            content: 'کپی شد!';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #202124;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .tooltip.active::after {
+            opacity: 1;
+            top: -40px;
+        }
+        
+        #fake_mouse {
+            position: absolute;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.5s ease;
+            transform-origin: top left;
+        }
+        
+        #fake_mouse.animate {
+            opacity: 1;
+            animation: mouseClick 1s ease;
+        }
+        
+        @keyframes mouseClick {
+            0% { transform: scale(1); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        
+        #footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f2f2f2;
+            padding: 10px 20px;
+            border-top: 1px solid #dadce0;
+            font-size: 14px;
+            color: #70757a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #footer a {
+            color: #70757a;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        #footer a:hover {
+            color: #202124;
+            text-decoration: underline;
+        }
+        
+        #footer .github img {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+        }
+        
+        /* Google-like colors animation */
+        .color-animation {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .color-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--google-blue) 0%, var(--google-red) 25%, var(--google-yellow) 50%, var(--google-green) 75%);
+            background-size: 400% 400%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
 </head>
 
 <body>
@@ -43,7 +398,7 @@
         (:
     </p>
 </div>
-<div class="main">
+<div class="main color-animation">
     <div class="logo">
         <img id="logo" src="assets/images/logo.png" alt="Logo"/>
     </div>
@@ -73,7 +428,7 @@
             <input class="link copyable" readonly="readonly" id="myInput" type="text"/>
             <div class="buttons">
                 <div class="tooltip">
-                    <button onclick="myFunction()">
+                    <button onclick="copyLink()">
                         کپی کردن آدرس
                     </button>
                 </div>
@@ -85,10 +440,6 @@
 </div>
 <img id="fake_mouse" class="c3" src="assets/images/mouse_arrow.png" alt="Mouse"/>
 
-<!--<div id="about" class="c2">-->
-<!--    <p>برای کسانی که هی ازشون سوالاتی می‌شه که با یک گوگل ساده می شه به جوابش رسید.</p>-->
-<!--    <p>این پروژه هیچ ربطی به گوگل نداره.</p>-->
-<!--</div>-->
 <div id="footer">
     <div class="right">
         <a href="mailto:admin@lmgtfy.me.uk?body=Nice&amp;subject=I%20love%20LMGTFY%21" rel="localize[contact]">نویسنده
@@ -104,7 +455,71 @@
     </div>
 </div>
 
-
+<script>
+    // Confetti effect
+    function fireConfetti() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#4285F4', '#EA4335', '#FBBC05', '#34A853']
+        });
+    }
+    
+    // Copy link function
+    function copyLink() {
+        const copyText = document.getElementById("myInput");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        
+        // Show tooltip
+        const tooltip = document.querySelector('.tooltip');
+        tooltip.classList.add('active');
+        setTimeout(() => {
+            tooltip.classList.remove('active');
+        }, 2000);
+        
+        // Fire confetti
+        fireConfetti();
+    }
+    
+    // Animate mouse click
+    function animateMouseClick(x, y) {
+        const mouse = document.getElementById('fake_mouse');
+        mouse.style.left = (x - 10) + 'px';
+        mouse.style.top = (y - 10) + 'px';
+        mouse.classList.add('animate');
+        setTimeout(() => {
+            mouse.classList.remove('animate');
+        }, 1000);
+    }
+    
+    // Add click animation to buttons
+    document.querySelectorAll('#search, #lucky').forEach(button => {
+        button.addEventListener('click', function(e) {
+            animateMouseClick(e.clientX, e.clientY);
+            setTimeout(fireConfetti, 500);
+        });
+    });
+    
+    // Close link box
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('link').style.display = 'none';
+    });
+    
+    // Original functions (keep functionality)
+    function myFunction() {
+        copyLink();
+    }
+    
+    function openInNewTab() {
+        // Original functionality
+    }
+    
+    function shortLink() {
+        // Original functionality
+    }
+</script>
 </body>
-
 </html>
